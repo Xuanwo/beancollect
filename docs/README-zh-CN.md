@@ -1,16 +1,14 @@
 # beancollect
 
-beancollect helps your collect beans so that you can count them.
+beancollect 帮助你收集豆子 (bean) 以便于清点他们。
 
-[中文文档](docs/README-zh-CN.md)
-
-## Usage
+## 使用方法
 
 ```bash
 beancollect -s wechat collect/wechat.csv
 ```
 
-Output will be like:
+将会输出：
 
 ```
 2019-06-20 ! "北京麦当劳食品有限公司" "北京麦当劳食品有限公司"
@@ -20,9 +18,9 @@ Output will be like:
     Assets:Deposit:WeChat -4 CNY
 ```
 
-## Setup
+## 设置
 
-Recommended beancount directory structure:
+推荐的 beancount 项目结构：
 
 ```
 ├── account
@@ -44,15 +42,15 @@ Recommended beancount directory structure:
         └── 07.bean
 ```
 
-All file that beancollect located in `collect` directory.
+beancollect 需要的所有文件都在 `collect` 目录下。
 
-## Config
+## 配置
 
-beancollect supports account mapping and rules execution on beancount transactions.
+beancollect 支持账户映射和规则执行。
 
-beancollect will one `global.yaml` and a `schema.yaml` for every schema, and `global.yaml` will be override by `schema.yaml`.
+beancollect 会有一个全局的配置文件 `global.yaml`，然后每种格式都会一个独立的配置文件 `schema.yaml`，`global.yaml` 中的条目将会被 `schema.yaml` 覆盖。
 
-For example:
+比如：
 
 ```yaml
 account:
@@ -86,16 +84,16 @@ rules:
 
 ### Account
 
-Account will convert account in beancount.
+这个配置会用来做账户的映射。
 
-### Rules
+### 规则
 
-- add_accounts: If condition is matched, we will add an account into transaction.
+- add_accounts: 如果条件满足，就在事务中增加一个账户
 
-## Billings
+## 账单
 
-### WeChat
+### 微信
 
-`Me` -> `WeChat Pay` -> `Wallet` -> `Transactions` -> `...` in right up corner -> `导出账单`
+`我` -> `支付` -> `钱包` -> `账单` -> `...` in right up corner -> `导出账单`
 
-The billing will be sent to your email.
+账单将会发送到你指定的邮箱。

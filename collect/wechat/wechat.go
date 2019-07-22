@@ -1,8 +1,10 @@
 package wechat
 
 import (
-	"bufio"
+	"bytes"
+	"encoding/csv"
 	"io"
+	"io/ioutil"
 	"strconv"
 	"strings"
 	"time"
@@ -14,6 +16,8 @@ import (
 
 // Type is the type of wechat.
 const Type = "wechat"
+
+var comments = []byte(",,,,,,,,")
 
 // WeChat is the struct for wechat type.
 type WeChat struct {
@@ -42,28 +46,28 @@ type record struct {
 func (w *WeChat) Parse(c *types.Config, r io.Reader) (t types.Transactions, err error) {
 	t = make(types.Transactions, 0)
 
-	headerParsed := false
-	buf := bufio.NewScanner(r)
-	for buf.Scan() {
-		line := buf.Text()
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		log.Errorf("ioutil read failed for %s", err)
+		return
+	}
 
-		// WeChat will use ",,,,,,,," suffix for comment.
-		if strings.HasSuffix(line, ",,,,,,,,") {
-			continue
-		}
+	idx := bytes.LastIndex(b, comments)
+	if idx != -1 {
+		b = b[idx+len(comments):]
+	}
 
-		// The first line is csv header, we should also ignore them.
-		if !headerParsed {
-			headerParsed = true
-			continue
-		}
-
-		s := strings.Split(line, ",")
-
+	cr := csv.NewReader(bytes.NewReader(b))
+	records, err := cr.ReadAll()
+	if err != nil {
+		log.Errorf("csv read failed for %s", err)
+		return
+	}
+	for _, s := range records[1:] {
 		r := &record{}
 		r.Time, err = time.Parse("2006-01-02 15:04:05", s[0])
 		if err != nil {
-			log.Errorf("time parse failed for %v", err)
+			log.Errorf("time <%s> parse failed for [%v]", s[0], err)
 			return
 		}
 		r.Type = strings.TrimSpace(s[1])
@@ -73,7 +77,7 @@ func (w *WeChat) Parse(c *types.Config, r io.Reader) (t types.Transactions, err 
 		// WeChat will use "¥298.00" for amount, we should trim it.
 		r.Amount, err = strconv.ParseFloat(s[5][2:], 64)
 		if err != nil {
-			log.Errorf("amount parse failed for %v", err)
+			log.Errorf("amount <%s> parse failed for [%v]", s[5], err)
 			return
 		}
 		r.Payment = strings.TrimSpace(s[6])

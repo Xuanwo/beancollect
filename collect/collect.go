@@ -1,10 +1,11 @@
 package collect
 
 import (
-	"github.com/Xuanwo/beancollect/collect/wechat"
 	"io"
 	"log"
 
+	"github.com/Xuanwo/beancollect/collect/alipay"
+	"github.com/Xuanwo/beancollect/collect/wechat"
 	"github.com/Xuanwo/beancollect/types"
 )
 
@@ -14,10 +15,12 @@ type Collector interface {
 }
 
 // NewCollector will create a new collector.
-func NewCollector(t string, r io.Reader) Collector {
+func NewCollector(t string) Collector {
 	switch t {
 	case wechat.Type:
 		return wechat.NewWeChat()
+	case alipay.Type:
+		return alipay.NewAliPay()
 	default:
 		log.Fatalf("not supported type %s", t)
 	}

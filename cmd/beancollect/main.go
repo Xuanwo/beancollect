@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/Xuanwo/beancollect/bean"
-	"github.com/Xuanwo/beancollect/collect/wechat"
+	"github.com/Xuanwo/beancollect/collect"
 	"github.com/Xuanwo/beancollect/constants"
 	"github.com/Xuanwo/beancollect/types"
 )
@@ -74,22 +74,17 @@ func run(c *cli.Context) (err error) {
 
 	var t types.Transactions
 
-	switch schema {
-	case wechat.Type:
-		w := wechat.NewWeChat()
+	f, err := os.Open(c.Args().Get(0))
+	if err != nil {
+		log.Errorf("Open file failed for %v", err)
+		return err
+	}
+	defer f.Close()
 
-		f, err := os.Open(c.Args().Get(0))
-		if err != nil {
-			log.Errorf("Open file failed for %v", err)
-			return err
-		}
-		defer f.Close()
-
-		t, err = w.Parse(schemaConfig, f)
-		if err != nil {
-			log.Errorf("Parse wechat failed for %v", err)
-			return err
-		}
+	t, err = collect.NewCollector(schema).Parse(schemaConfig, f)
+	if err != nil {
+		log.Errorf("Parse failed for %v", err)
+		return err
 	}
 
 	bean.Generate(schemaConfig, &t)

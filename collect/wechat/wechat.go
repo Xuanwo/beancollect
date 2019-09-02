@@ -17,6 +17,14 @@ import (
 // Type is the type of wechat.
 const Type = "wechat"
 
+// Available status for wechat.
+const (
+	StatusPaymentSuccess  = "支付成功"
+	StatusWithdrawSuccess = "提现已到账"
+	StatusDepositSuccess  = "已存入零钱"
+	StatusRefundSuccess   = "已全额退款"
+)
+
 var comments = []byte(",,,,,,,,")
 
 // WeChat is the struct for wechat type.
@@ -86,6 +94,11 @@ func (w *WeChat) Parse(c *types.Config, r io.Reader) (t types.Transactions, err 
 		r.PayeeID = strings.TrimSpace(s[9])
 		r.Comment = strings.TrimSpace(s[10])
 
+		// Ignore all refund payment.
+		if r.Status == StatusRefundSuccess {
+			continue
+		}
+
 		t = append(t, formatTransaction(r, c))
 	}
 
@@ -100,6 +113,9 @@ func formatTransaction(r *record, c *types.Config) types.Transaction {
 	t.Flag = "!"
 	// WeChat may have " around narration, let's trim them.
 	t.Narration = strings.Trim(r.Commodity, "\"")
+	if t.Narration == "/" {
+		t.Narration = strings.Trim(r.Type, "\"")
+	}
 	t.Payee = r.Payee
 	t.Accounts = append(t.Accounts, c.Account[r.Payment])
 	t.Amount = r.Amount
@@ -107,5 +123,10 @@ func formatTransaction(r *record, c *types.Config) types.Transaction {
 		t.Amount = -r.Amount
 	}
 	t.Currency = "CNY"
+
+	if r.Status == StatusWithdrawSuccess {
+		t.Accounts = append(t.Accounts, c.Account["零钱"])
+	}
+
 	return t
 }

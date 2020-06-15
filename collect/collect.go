@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/Xuanwo/beancollect/collect/alipay"
+	"github.com/Xuanwo/beancollect/collect/cmbchina"
 	"github.com/Xuanwo/beancollect/collect/wechat"
 	"github.com/Xuanwo/beancollect/types"
 )
@@ -21,6 +22,8 @@ func NewCollector(t string) Collector {
 		return wechat.NewWeChat()
 	case alipay.Type:
 		return alipay.NewAliPay()
+	case cmbchina.Type:
+		return cmbchina.NewCMBChina()
 	default:
 		log.Fatalf("not supported type %s", t)
 	}

@@ -87,8 +87,6 @@ func (ali *AliPay) Parse(c *types.Config, r io.Reader) (t types.Transactions, er
 	for _, s := range records[2:] {
 		r := &record{}
 
-		log.Errorf("%s", s)
-
 		idx := 0
 
 		s[idx] = strings.TrimSpace(s[idx])

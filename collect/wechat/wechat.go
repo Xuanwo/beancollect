@@ -117,6 +117,10 @@ func formatTransaction(r *record, c *types.Config) types.Transaction {
 		t.Narration = strings.Trim(r.Type, "\"")
 	}
 	t.Payee = r.Payee
+
+	if _, ok := c.Account[r.Payment]; !ok {
+		log.Infof("payment %s doesn't have related account", r.Payment)
+	}
 	t.Accounts = append(t.Accounts, c.Account[r.Payment])
 	t.Amount = r.Amount
 	if r.Flow == "支出" {

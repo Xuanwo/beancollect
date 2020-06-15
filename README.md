@@ -96,6 +96,16 @@ Account will convert account in beancount.
 
 ### WeChat
 
+On the phone:
+
 `Me` -> `WeChat Pay` -> `Wallet` -> `Transactions` -> `...` in right up corner -> `导出账单`
 
 The billing will be sent to your email.
+
+### Alipay
+
+Visit website: `https://www.alipay.com/` to download billings
+
+### CMBChina
+
+Enable email billings

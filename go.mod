@@ -6,6 +6,6 @@ require (
 	github.com/imdario/mergo v0.3.9
 	github.com/sirupsen/logrus v1.6.0
 	github.com/urfave/cli v1.22.4
-	golang.org/x/text v0.3.3
+	golang.org/x/text v0.3.4
 	gopkg.in/yaml.v2 v2.3.0
 )
